@@ -4,7 +4,11 @@
 preferenceFile=~/Library/Preferences/com.microsoft.office.plist
 preferenceDomain=`basename -s .plist "${preferenceFile}"`
 
-#What number to report progress when deleting individual Office recent items
+#Testing
+#preferenceFile=~/com.microsoft.office.plist
+#preferenceDomain=~/com.microsoft.office
+
+#What number to report progress by when deleting individual Office recent items
 countOfficeFilesBy=25
 
 #Here's PlistBuddy!
@@ -92,6 +96,13 @@ done
 #Office 2011 CFPreferences-unsafe
 #This leaves the first 20 (i.e. the most recent 20) array entries available for those who rely on recent files
 #########
+##Synchronize CFPreferences before running PlistBuddy, hopefully cutting down on the chance PlistBuddy and CFPreferences collide
+#/usr/bin/python <<EOF
+#import CoreFoundation 
+#
+#CoreFoundation.CFPreferencesAppSynchronize("${preferenceDomain}")
+#EOF
+#
 #for office2011Program in MSWD XCEL PPT3
 #do
 #	#Check if the preference key exists
