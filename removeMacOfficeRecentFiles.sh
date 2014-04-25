@@ -1,10 +1,8 @@
 #!/bin/bash
 
 #Preference file location
-#preferenceFile=~/Library/Preferences/com.microsoft.office.plist
-preferenceFile=~/Downloads/com.microsoft.office.plist
-#preferenceDomain=`basename -s .plist "${preferenceFile}"`
-preferenceDomain=~/Downloads/com.microsoft.office
+preferenceFile=~/Library/Preferences/com.microsoft.office.plist
+preferenceDomain=`basename -s .plist "${preferenceFile}"`
 
 #What number to report progress when deleting individual Office recent items
 countOfficeFilesBy=25
