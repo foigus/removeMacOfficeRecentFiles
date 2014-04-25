@@ -28,21 +28,23 @@ echo Beginning size of preference file: `du -h "${preferenceFile}" | awk '{ prin
 #This leaves the first 20 (i.e. the most recent 20) files available for those who rely on recent files
 for office2008Program in MSWD XCEL PPT
 do
-	#Check if we have at least 21 recent files
-	if ! defaults read "${preferenceDomain}" "2008\File Aliases\\${office2008Program}21" >/dev/null 2>&1
+	#Create a sorted array of the the preference key numbers of the recent files
+	office2008RecentFileKeyNumbers=( $( defaults read ~/com.microsoft.office | grep 'File Aliases\\\\\\\\'"${office2008Program}"'' | awk -F= '{ print $1 }' | sed 's/\\\\\\//g' | awk -F\\ '{ print $3 }' | sed 's/\"//g' | sed 's/'"${office2008Program}"'//g' | sort -g ) )
+	
+	#Check if we have more than 20 recent files
+	if [ "${#office2008RecentFileKeyNumbers[@]}" -gt 19 ] #Arrays are zero indexed
 	then
-		echo 20 or fewer recent "${office2008Program}" 2008 recent file keys
-	else
-		#We have at least 21 recent files--loop through deleting them
+		#We have at least 20 recent files--loop through deleting them
 		echo -n "Deleting ${office2008Program} 2008 recent file keys: 1..."
 		
 		#Initialize a counter for counting deleted recent items
 		let "c=0"
-		for i in {21..10000}
+
+		for i in "${office2008RecentFileKeyNumbers[@]}"
 		do
-			if defaults read "${preferenceDomain}" "2008\File Aliases\\${office2008Program}${i}" >/dev/null 2>&1
+			if [ "${i}" -gt 19 ] #Arrays are zero indexed
 			then
-				#Success reading the File Alias key, delete the File Alias and Access Date keys
+				#We are at an index greater than 19 (an excessive recent file), delete the File Alias and Access Date keys
 				defaults delete "${preferenceDomain}" "2008\File Aliases\\${office2008Program}${i}" 
 				defaults delete "${preferenceDomain}" "2008\MRU Access Date\\${office2008Program}${i}"
 				
@@ -56,15 +58,14 @@ do
 					#Reached a point we should acknowledge progress
 					echo -n "${c}..."
 				fi
-			else
-				#Failed deleting the File Alias key, index does not exist and there should be no higher indexes
-				echo "${c}"
-				
-				#Reset the counter
-				let "c=0"
-				break
 			fi
 		done
+		
+		#Done deleting excess recent files for an application.  Echo out the final count and reset the counter
+		echo "${c}"
+		let "c=0"
+	else
+		echo 20 or fewer recent "${office2008Program}" 2008 recent file keys
 	fi
 done
 
@@ -113,11 +114,10 @@ done
 #		#Count the number of array items by counting the instances of "File Alias"
 #		arrayItems=`defaults read "${preferenceDomain}" "14\File MRU\\\\${office2011Program}" | grep -c "File Alias"`
 #		
-#		#If there are 21 or more array items, let's delete the excess recent file array dicts
-#		#Remember PlistBuddy is zero indexed
-#		if [ ! "${arrayItems}" -lt 20 ]
+#		#If there are more than 20 array items, let's delete the excess recent file array dicts
+#		if [ "${arrayItems}" -gt 19 ] #PlistBuddy is zero indexed
 #		then
-#			#We have at least 21 recent file array dicts
+#			#We have at least 20 recent file array dicts
 #			echo -n "Deleting ${office2011Program} 2011 recent file array dicts: 1..."
 #
 #			#Initialize a counter
