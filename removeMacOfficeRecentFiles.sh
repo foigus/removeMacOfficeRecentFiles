@@ -29,7 +29,7 @@ echo Beginning size of preference file: `du -h "${preferenceFile}" | awk '{ prin
 for office2008Program in MSWD XCEL PPT
 do
 	#Create a sorted array of the the preference key numbers of the recent files
-	office2008RecentFileKeyNumbers=( $( defaults read ~/com.microsoft.office | grep 'File Aliases\\\\\\\\'"${office2008Program}"'' | awk -F= '{ print $1 }' | sed 's/\\\\\\//g' | awk -F\\ '{ print $3 }' | sed 's/\"//g' | sed 's/'"${office2008Program}"'//g' | sort -g ) )
+	office2008RecentFileKeyNumbers=( $( defaults read com.microsoft.office | grep 'File Aliases\\\\\\\\'"${office2008Program}"'' | awk -F= '{ print $1 }' | sed 's/\\\\\\//g' | awk -F\\ '{ print $3 }' | sed 's/\"//g' | sed 's/'"${office2008Program}"'//g' | sort -g ) )
 	
 	#Check if we have more than 20 recent files
 	if [ "${#office2008RecentFileKeyNumbers[@]}" -gt 19 ] #Arrays are zero indexed
